@@ -28,11 +28,7 @@ class Sequence:
         # Data # 
         self.sequence = sequence
         self.header = header
-        self.length = None
-
-    # Methods #
-    def findlength(self):
-        self.length = len(self.sequence)
+        self.length = len(sequence)
 
 class Motif:
     def __init__(self, motifsequence:str):
@@ -79,16 +75,18 @@ def parse_fasta(onelinefastafile: str) -> dict:
 motifs = parse_motif(motiffile)
 sequences = parse_fasta(onelinefastafile)
 
-# Make objects # 
-
+# Make motif objects # 
 motif_obj_list = []
-
 motif_obj_list += [Motif(a) for a in motifs]
 
-for a in motif_obj_list:
-    print(a.sequence)
+# Make sequence objects # 
+sequence_obj_list = []
+for a in sequences:
+    seq = a
+    header = sequences[a]
+    sequence_obj_list += [Sequence(seq, header)]
 
-
+print(sequence_obj_list[0].length)
 
 # degenerate bases 
 
