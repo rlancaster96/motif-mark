@@ -5,6 +5,7 @@ import cairo
 import math
 import bioinfo
 import argparse
+import re
 
 # picture of a sequence: positions of exons, introns, and motifs, to scale 
 
@@ -21,6 +22,31 @@ fastafile = args.fastafile
 onelinefastafile = "oneline" + fastafile
 
 # define classes 
+
+class Sequence:
+    def __init__(self, sequence:str, header:str):
+        # Data # 
+        self.sequence = sequence
+        self.header = header
+        self.length = None
+
+    # Methods #
+    def findlength(self):
+        self.length = len(self.sequence)
+
+class Motif:
+    def __init__(self, motifsequence:str):
+        # Data # 
+        self.sequence = motifsequence
+        self.position = None
+    
+    # Methods #
+    #def findposition(self, sequence:str):
+     #   self.position = find the position in the sequence also you have to account for ambiguity, this is pbably where you call regex to find stuff
+    
+    #def draw(self, somethingelse):
+    #    call context here to draw with cairo
+
 
 # read in info from files #
 
@@ -52,6 +78,16 @@ def parse_fasta(onelinefastafile: str) -> dict:
 
 motifs = parse_motif(motiffile)
 sequences = parse_fasta(onelinefastafile)
+
+# Make objects # 
+
+motif_obj_list = []
+
+motif_obj_list += [Motif(a) for a in motifs]
+
+for a in motif_obj_list:
+    print(a.sequence)
+
 
 
 # degenerate bases 
