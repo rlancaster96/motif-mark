@@ -1,14 +1,14 @@
 #!/usr/bin/env python
 
+# imports # 
 from __future__ import annotations
 import cairo
 import math
 import bioinfo
 import argparse
+# info on re https://docs.python.org/3/howto/regex.html #
 import re
 from re import finditer
-
-# picture of a sequence: positions of exons, introns, and motifs, to scale 
 
 #set up argparse
 def get_args():
@@ -27,14 +27,15 @@ onelinefastafile = "oneline" + fastafile
 class Sequence:
     def __init__(self, sequence:str, header:str):
         # Data # 
-        self.sequence = sequence
+        self.sequence = sequence # sequence containing upper and lower case. use for finding exon positions
+        self.gensequence = sequence.lower() # general sequence only containing lower case. use for finding motif positions
         self.header = header
         self.length = len(sequence)
 
 class Motif:
     def __init__(self, motifsequence:str):
         # Data # 
-        self.sequence = motifsequence
+        self.sequence = motifsequence.lower()
         self.position = None
         self.regex = None
     
@@ -45,8 +46,6 @@ class Motif:
        for a in oglist: # iterate over the list of characters and append to regex-friendly string
            if a == "y":
                regstring += "[ct]"
-           elif a == "Y":
-               regstring += "[CT]"
            else:
                regstring += "[" + a + "]" 
        self.regex = regstring
@@ -57,8 +56,7 @@ class Motif:
 
 # read in info from files #
 
-# convert from multiple line fasta to one line fasta #
-bioinfo.oneline_fasta(fastafile, onelinefastafile)
+
 
 # read in motifs into list # 
 def parse_motif(motiffile: str) -> list:
@@ -82,30 +80,33 @@ def parse_fasta(onelinefastafile: str) -> dict:
                 sequences[sequence] = header # put in dictionary
     return sequences
 
-# intake motif and sequence information from files and store in memory # 
-motifs: list = parse_motif(motiffile) # list of motifs ['motif1', 'motif2', 'motif3', ...]
-sequences: dict = parse_fasta(onelinefastafile) # dictionary of sequences {'sequence1':'header1', 'sequence2':'header2', ...}
+if __name__ == "__main__":
+    # convert from multiple line fasta to one line fasta #
+    bioinfo.oneline_fasta(fastafile, onelinefastafile)
+    # intake motif and sequence information from files and store in memory # 
+    motifs: list = parse_motif(motiffile) # list of motifs ['motif1', 'motif2', 'motif3', ...]
+    sequences: dict = parse_fasta(onelinefastafile) # dictionary of sequences {'sequence1':'header1', 'sequence2':'header2', ...}
 
-# Make motif objects # 
-motif_obj_list: list = []
-motif_obj_list += [Motif(a) for a in motifs] #for each motif create object Motif(motif) and store in list
+    # Make motif objects # 
+    motif_obj_list: list = []
+    motif_obj_list += [Motif(a) for a in motifs] #for each motif create object Motif(motif) and store in list
 
-# Make sequence objects # 
-sequence_obj_list: list = []
-for a in sequences: # for each sequence and header, store in list of sequence objects
-    seq = a
-    header = sequences[a]
-    sequence_obj_list += [Sequence(seq, header)]
+    # Make sequence objects # 
+    sequence_obj_list: list = []
+    for a in sequences: # for each sequence and header, store in list of sequence objects
+        seq = a
+        header = sequences[a]
+        sequence_obj_list += [Sequence(seq, header)]
 
-# find positions of motifs in sequences # 
+    # find positions of motifs in sequences # 
 
-currentseq = sequence_obj_list[0]
-currentmotif = motif_obj_list[0]
-currentmotif.regexify()
-print(currentmotif.regex)
+    currentseq = sequence_obj_list[0]
+    currentmotif = motif_obj_list[0]
+    currentmotif.regexify()
 
-for match in finditer("pattern", "string"):
-    print(match.span(), match.group())
+    # find where regex matches are positionally in sequence
+    for a in finditer(currentmotif.regex, currentseq.gensequence): 
+        print(a.span())
 
 # findseq = currentmotif.sequence
 # oglist = [*findseq]
