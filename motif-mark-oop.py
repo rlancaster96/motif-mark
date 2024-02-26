@@ -31,6 +31,7 @@ class Sequence:
         self.gensequence = sequence.lower() # general sequence only containing lower case. use for finding motif positions
         self.header = header
         self.length = len(sequence)
+        self.motifpositions = None # list of tuples, one tuple (pos start, pos end) for each raw position a motif is located.
 
 class Motif:
     def __init__(self, motifsequence:str):
@@ -54,11 +55,9 @@ class Motif:
     #    call context here to draw with cairo
 
 
-# read in info from files #
+# define functions # 
 
-
-
-# read in motifs into list # 
+# func to read in motifs into list # 
 def parse_motif(motiffile: str) -> list:
     motifs = []
     with open(motiffile) as fh:
@@ -67,7 +66,7 @@ def parse_motif(motiffile: str) -> list:
             motifs.append(line)
     return motifs
 
-# read in sequences into dictionary {sequence : header} # 
+# func to read in sequences into dictionary {sequence : header} # 
 def parse_fasta(onelinefastafile: str) -> dict:
     sequences = {}
     with open(onelinefastafile) as fh:
@@ -80,7 +79,10 @@ def parse_fasta(onelinefastafile: str) -> dict:
                 sequences[sequence] = header # put in dictionary
     return sequences
 
+# main # 
+
 if __name__ == "__main__":
+    
     # convert from multiple line fasta to one line fasta #
     bioinfo.oneline_fasta(fastafile, onelinefastafile)
     # intake motif and sequence information from files and store in memory # 
@@ -99,15 +101,19 @@ if __name__ == "__main__":
         sequence_obj_list += [Sequence(seq, header)]
 
     # find positions of motifs in sequences # 
-
-    currentseq = sequence_obj_list[0]
-    currentmotif = motif_obj_list[0]
-    currentmotif.regexify()
+    for i, a in enumerate sequence_obj_list:
+        currentseq = sequence_obj_list[i]
+        
+        currentmotif = motif_obj_list[0]
+        currentmotif.regexify()
 
     # find where regex matches are positionally in sequence
+    rawpositions = []
     for a in finditer(currentmotif.regex, currentseq.gensequence): 
-        print(a.span())
-
+        rawpositions += [a.span()] # "a" is a match object with "span" (position) and "match" (matched sequence) attributes
+    currentseq.motifpositions = rawpositions
+    print(currentseq.motifpositions)
+    
 # findseq = currentmotif.sequence
 # oglist = [*findseq]
 # looklist = []
