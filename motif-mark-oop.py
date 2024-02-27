@@ -30,8 +30,17 @@ class Sequence:
         self.sequence = sequence # sequence containing upper and lower case. use for finding exon positions
         self.gensequence = sequence.lower() # general sequence only containing lower case. use for finding motif positions
         self.header = header
-        self.length = len(sequence)
-        self.motifpositions = None # list of tuples, one tuple (pos start, pos end) for each raw position a motif is located.
+        self.length: list = [(0, len(sequence))]
+        self.exons = None
+
+    def __repr__(self):
+        return(f'{self.header}')
+    
+    def findexons(self):
+        exonlist: list = []
+        for a in finditer("[A-Z]+", self.sequence): 
+            exonlist += [(a.span())]
+            self.exons = exonlist
 
 class Motif:
     def __init__(self, motifsequence:str):
@@ -40,6 +49,9 @@ class Motif:
         self.position = None
         self.regex = None
     
+    def __repr__(self):
+        return(f'{self.sequence}')
+
     # Methods #
     def regexify(self):
        oglist = [*(self.sequence)] # split up the sequence into a list of individual characters
@@ -50,6 +62,7 @@ class Motif:
            else:
                regstring += "[" + a + "]" 
        self.regex = regstring
+       return
     
     #def draw(self, somethingelse):
     #    call context here to draw with cairo
@@ -100,20 +113,25 @@ if __name__ == "__main__":
         header = sequences[a]
         sequence_obj_list += [Sequence(seq, header)]
 
-    # find positions of motifs in sequences # 
-    for i, a in enumerate sequence_obj_list:
-        currentseq = sequence_obj_list[i]
-        
-        currentmotif = motif_obj_list[0]
-        currentmotif.regexify()
+    # find positions of motifs in sequences , just 1 to start with # 
+    currentseq = sequence_obj_list[0]
+    currentseq.findexons()
+    currentmotif = motif_obj_list[0]
+    currentmotif.regexify()
 
-    # find where regex matches are positionally in sequence
+
+    # find where motifs (regex matches) are positionally in sequence #
     rawpositions = []
     for a in finditer(currentmotif.regex, currentseq.gensequence): 
         rawpositions += [a.span()] # "a" is a match object with "span" (position) and "match" (matched sequence) attributes
-    currentseq.motifpositions = rawpositions
-    print(currentseq.motifpositions)
+    # raw positions for the motifs 
+    print(currentseq.exons)
+    print(currentseq.length)
+
+
     
+
+
 # findseq = currentmotif.sequence
 # oglist = [*findseq]
 # looklist = []

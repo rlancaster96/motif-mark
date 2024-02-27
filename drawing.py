@@ -3,10 +3,11 @@
 import cairo
 import math 
 
-sequence = "atgtccacatgtagtcacgtttgacatcagcaggccgtctctggggaAAAAACCTCTTCAGGCACTGGTGCCGAGGACCCTAGgtatgactcacctgtgcga"
-motif1 = "acat"
-motif2 = "ggcc"
-motif3 = "CCTCTT"
+seqlength = [(0,548)]
+exonpos = [(276,312)]
+
+print(seqlength)
+print(exonpos)
 
 
 
@@ -33,4 +34,4 @@ with cairo.ImageSurface(cairo.FORMAT_RGB24, 500, 500) as surface:
     context.fill()
 
     # save 
-    surface.write_to_png("salmon_swimming.png") 
+    surface.write_to_png("tester.png") 
