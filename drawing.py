@@ -5,6 +5,15 @@ import math
 
 seqlength = [(0,548)]
 exonpos = [(276,312)]
+totalsequences = 8
+longest = 771
+red = 0.9
+green = 0.5
+blue = 0.6
+
+rectangleheight = totalsequences*200
+rectanglewidth = int(longest+50)
+
 
 print(seqlength)
 print(exonpos)
@@ -12,24 +21,31 @@ print(exonpos)
 
 
 
-with cairo.ImageSurface(cairo.FORMAT_RGB24, 500, 500) as surface:
+with cairo.ImageSurface(cairo.FORMAT_RGB24, rectanglewidth, rectangleheight) as surface:
      
     context = cairo.Context(surface)
     
-    # fill in a white background 
+    # fill in a white background #
     context.set_source_rgb(1.0, 1.0, 1.0) # white
-    context.rectangle(0,0,500,500)
+    context.rectangle(0,0,rectanglewidth, rectangleheight)
     context.fill()
 
-    # draw line #
-    context.set_source_rgb(0.0, 0.0, 0.8) # dark blue 
+    # draw sequence # 
+    context.set_source_rgb(1.0, 1.0, 1.0)
     context.set_line_width(5)
     context.move_to(25,250)       
     context.line_to(475,250)
     context.stroke()
 
-    #draw a rectangle
-    context.set_source_rgb(1.0, 0.569, 0.643) # salmon pink 
+    # draw motif #
+    context.set_source_rgb(red, green, blue)
+    context.set_line_width(5)
+    context.move_to(25,250)       
+    context.line_to(475,250)
+    context.stroke()
+
+    #draw exon
+    context.set_source_rgb(1.0, 1.0, 1.0) # salmon pink 
     context.rectangle(50,280,200,50)      
     context.fill()
 

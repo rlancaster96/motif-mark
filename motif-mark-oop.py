@@ -6,6 +6,8 @@ import cairo
 import math
 import bioinfo
 import argparse
+import random # for randomizing motif colors 
+
 # info on re https://docs.python.org/3/howto/regex.html #
 import re
 from re import finditer
@@ -30,7 +32,8 @@ class Sequence:
         self.sequence = sequence # sequence containing upper and lower case. use for finding exon positions
         self.gensequence = sequence.lower() # general sequence only containing lower case. use for finding motif positions
         self.header = header
-        self.length: list = [(0, len(sequence))]
+        self.length: int = len(sequence)
+        # self.lengthrange: list = [(0, len(sequence))] put this in somewhere else 
         self.exons = None
 
     def __repr__(self):
@@ -45,9 +48,16 @@ class Sequence:
 class Motif:
     def __init__(self, motifsequence:str):
         # Data # 
+        # attributes for getting positions # 
         self.sequence = motifsequence.lower()
         self.position = None
         self.regex = None
+        
+        # attributes for drawing # 
+        self.color = None
+        self.red = None
+        self.green = None
+        self.blue = None
     
     def __repr__(self):
         return(f'{self.sequence}')
@@ -63,6 +73,15 @@ class Motif:
                regstring += "[" + a + "]" 
        self.regex = regstring
        return
+    
+    def colorit(self):
+        # generate three random floats to code for rgb color # 
+        self.red = round(random.uniform(0.0, 1.0), 1)
+        self.green = round(random.uniform(0.0, 1.0), 1)
+        self.blue = round(random.uniform(0.2, 0.8), 1) # limiting 0.2-0.8 guaruntees can't be white (0,0,0) or black (1,1,1)
+        self.color = (self.red, self.green, self.blue) # use tuple so order does not change because order = color
+        return
+        # make sure you include a checking step to ensure that no motifs are the same color. if they are are, reaassign color with colorit
     
     #def draw(self, somethingelse):
     #    call context here to draw with cairo
@@ -101,12 +120,12 @@ if __name__ == "__main__":
     # intake motif and sequence information from files and store in memory # 
     motifs: list = parse_motif(motiffile) # list of motifs ['motif1', 'motif2', 'motif3', ...]
     sequences: dict = parse_fasta(onelinefastafile) # dictionary of sequences {'sequence1':'header1', 'sequence2':'header2', ...}
-
-    # Make motif objects # 
+ 
+    # make motif objects # 
     motif_obj_list: list = []
     motif_obj_list += [Motif(a) for a in motifs] #for each motif create object Motif(motif) and store in list
 
-    # Make sequence objects # 
+    # make sequence objects # 
     sequence_obj_list: list = []
     for a in sequences: # for each sequence and header, store in list of sequence objects
         seq = a
@@ -118,6 +137,7 @@ if __name__ == "__main__":
     currentseq.findexons()
     currentmotif = motif_obj_list[0]
     currentmotif.regexify()
+    currentmotif.colorit()
 
 
     # find where motifs (regex matches) are positionally in sequence #
@@ -128,7 +148,15 @@ if __name__ == "__main__":
     print(currentseq.exons)
     print(currentseq.length)
 
-
+    # set up drawing parameters # 
+    # determine height# 
+    totalsequences: int = len(sequences) # how many sequences am I graphing? (use to determine height of png)
+    # determine width # 
+    longest = 0 # what is the longest sequence I am graphing? (use to determine width of png)
+    for a in sequence_obj_list: 
+        if a.length > longest:
+            longest = a.length
+    
     
 
 
@@ -142,7 +170,6 @@ if __name__ == "__main__":
 
 # print(looklist)
 
-# degenerate bases 
 
 
 
