@@ -78,7 +78,7 @@ class Motif:
         # generate three random floats to code for rgb color # 
         self.red = round(random.uniform(0.0, 1.0), 1)
         self.green = round(random.uniform(0.0, 1.0), 1)
-        self.blue = round(random.uniform(0.2, 0.8), 1) # limiting 0.2-0.8 guaruntees can't be white (0,0,0) or black (1,1,1)
+        self.blue = round(random.uniform(0.2, 0.8), 1) # limiting 0.2-0.8 guaruntees can't be white (1,1,1) or black (0,0,0)
         self.color = (self.red, self.green, self.blue) # use tuple so order does not change because order = color
         return
         # make sure you include a checking step to ensure that no motifs are the same color. if they are are, reaassign color with colorit
@@ -147,6 +147,8 @@ if __name__ == "__main__":
     # raw positions for the motifs 
     print(currentseq.exons)
     print(currentseq.length)
+    print(rawpositions)
+    print(currentseq.header)
 
     # set up drawing parameters # 
     # determine height# 
@@ -160,20 +162,7 @@ if __name__ == "__main__":
     
 
 
-# findseq = currentmotif.sequence
-# oglist = [*findseq]
-# looklist = []
-# for a in looklist:
-#     if a == 'y':
-#         looklist.append(['ct'])
-#     elif a == 
-
-# print(looklist)
 
 
-
-
-
-
-# draw the image 
+# draw the image see drawing.py 
 
