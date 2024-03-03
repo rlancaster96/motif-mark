@@ -9,7 +9,7 @@ exonpos = [(276,312)]
 exonstart, exonfinish = exonpos[0]
 motifpositions = [(89, 93), (106, 110), (176, 180), (297, 301), (338, 342), (342, 346), (365, 369), (376, 380), (429, 433), (443, 447), (467, 471), (530, 534)]
 totalsequences = 1
-longest = 771
+longest_sequence = 771
 red = 0.9
 green = 0.5
 blue = 0.6
@@ -20,7 +20,7 @@ sequence1 = 1*100
 end = finish + 25 # buffer 
 
 rectangleheight = totalsequences*200
-rectanglewidth = int(longest+50)
+rectanglewidth = int(longest_sequence+50)
 
 
 

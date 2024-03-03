@@ -27,7 +27,7 @@ onelinefastafile = "oneline" + fastafile
 # define classes #
 
 class Sequence:
-    def __init__(self, sequence:str, header:str):
+    def __init__(self, sequence:str, header:str, number):
         # Data # 
         self.sequence = sequence # sequence containing upper and lower case. use for finding exon positions
         self.gensequence = sequence.lower() # general sequence only containing lower case. use for finding motif positions
@@ -35,10 +35,12 @@ class Sequence:
         self.length: int = len(sequence)
         # self.lengthrange: list = [(0, len(sequence))] put this in somewhere else 
         self.exons = None
+        self.number:int = number+1 # add a sequence number here instead of relying on calling the list of objects 
 
     def __repr__(self):
         return(f'{self.header}')
     
+    # Methods # 
     def findexons(self):
         exonlist: list = []
         for a in finditer("[A-Z]+", self.sequence): 
@@ -46,12 +48,13 @@ class Sequence:
             self.exons = exonlist
 
 class Motif:
-    def __init__(self, motifsequence:str):
+    def __init__(self, motifsequence:str, number:int):
         # Data # 
         # attributes for getting positions # 
         self.sequence = motifsequence.lower()
         self.position = None
         self.regex = None
+        self.number:int = number+1
         
         # attributes for drawing # 
         self.color = None
@@ -63,12 +66,36 @@ class Motif:
         return(f'{self.sequence}')
 
     # Methods #
+    
     def regexify(self):
        oglist = [*(self.sequence)] # split up the sequence into a list of individual characters
        regstring = "" # make an empty string to append to
        for a in oglist: # iterate over the list of characters and append to regex-friendly string
-           if a == "y":
+           # https://en.wikipedia.org/wiki/Nucleic_acid_notation #
+           if a == "y": # pyrimidine
                regstring += "[ct]"
+           elif a == "u": # uracil
+               regstring += "[t]"
+           elif a == "w": # weak
+               regstring += "[at]"
+           elif a == "s": # strong
+               regstring += "[cg]"
+           elif a == "m": # amino
+               regstring += "[ac]"
+           elif a == "k": # ketone
+               regstring += "[gt]"
+           elif a == "r": # purine
+               regstring += "[ag]"    
+           elif a == "b": # not a
+               regstring += "[cgt]"
+           elif a == "d": # not c
+               regstring += "[agt]" 
+           elif a == "h": # not g
+               regstring += "[act]"
+           elif a == "v": # not t
+               regstring += "[acg]"
+           elif a == "n": # any nucleotide
+               regstring += "[actg]"
            else:
                regstring += "[" + a + "]" 
        self.regex = regstring
@@ -86,10 +113,15 @@ class Motif:
     #def draw(self, somethingelse):
     #    call context here to draw with cairo
 
+class Canvas: # the canvas I will be drawing on # 
+    def __init__(self, totalsequences, longestsequence):
+        self.height:int = totalsequences*200
+        self.width:int = int(longest_sequence+50)
 
-# define functions # 
 
-# func to read in motifs into list # 
+# >> define functions << # 
+
+# read in motifs into list # 
 def parse_motif(motiffile: str) -> list:
     motifs = []
     with open(motiffile) as fh:
@@ -98,7 +130,7 @@ def parse_motif(motiffile: str) -> list:
             motifs.append(line)
     return motifs
 
-# func to read in sequences into dictionary {sequence : header} # 
+# read in sequences into dictionary {sequence : header} # 
 def parse_fasta(onelinefastafile: str) -> dict:
     sequences = {}
     with open(onelinefastafile) as fh:
@@ -110,6 +142,14 @@ def parse_fasta(onelinefastafile: str) -> dict:
                 sequence = line
                 sequences[sequence] = header # put in dictionary
     return sequences
+
+# determine the longest sequence from a list of sequence objects with attribute "length" (use to determine width of png) #
+def longest(sequence_obj_list: list) -> int:
+    longest: int = 0
+    for a in sequence_obj_list: 
+        if a.length > longest:
+            longest = a.length
+    return longest
 
 # main # 
 
@@ -123,21 +163,33 @@ if __name__ == "__main__":
  
     # make motif objects # 
     motif_obj_list: list = []
-    motif_obj_list += [Motif(a) for a in motifs] #for each motif create object Motif(motif) and store in list
+    motif_obj_list += [Motif(motifsequence, i) for i, motifsequence in enumerate(motifs)] #for each motif create object Motif(motif) and store in list
+    for motif in motif_obj_list:
+        motif.colorit()
+        motif.regexify()
 
     # make sequence objects # 
     sequence_obj_list: list = []
-    for a in sequences: # for each sequence and header, store in list of sequence objects
-        seq = a
-        header = sequences[a]
-        sequence_obj_list += [Sequence(seq, header)]
+    for i, seq in enumerate(sequences): # for each sequence and header, store in list of sequence objects
+        header = sequences[seq]
+        sequence_obj_list += [Sequence(seq, header, i)]
+    for sequence in sequence_obj_list:
+        sequence.findexons()
 
-    # find positions of motifs in sequences , just 1 to start with # 
-    currentseq = sequence_obj_list[0]
-    currentseq.findexons()
+    # set up drawing parameters # 
+    # >> determine height << # 
+    totalsequences: int = len(sequences) # how many sequences am I graphing? (use to determine height of png)
+    # >> determine width << # 
+    longest_sequence:int = longest(sequence_obj_list) # determine width of png 
+    drawing_canvas = Canvas(totalsequences, longest_sequence)
+
+    # find positions of motifs in sequences , just 1 to start with #
+
+
+
+    for i, sequences in enumerate(sequence_obj_list): 
+        currentseq = sequence_obj_list[0]
     currentmotif = motif_obj_list[0]
-    currentmotif.regexify()
-    currentmotif.colorit()
 
 
     # find where motifs (regex matches) are positionally in sequence #
@@ -150,18 +202,9 @@ if __name__ == "__main__":
     print(rawpositions)
     print(currentseq.header)
 
-    # set up drawing parameters # 
-    # determine height# 
-    totalsequences: int = len(sequences) # how many sequences am I graphing? (use to determine height of png)
-    # determine width # 
-    longest = 0 # what is the longest sequence I am graphing? (use to determine width of png)
-    for a in sequence_obj_list: 
-        if a.length > longest:
-            longest = a.length
+
     
     
-
-
 
 
 # draw the image see drawing.py 
