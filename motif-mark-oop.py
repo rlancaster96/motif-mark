@@ -14,7 +14,7 @@ from re import finditer
 
 #set up argparse
 def get_args():
-    parser = argparse.ArgumentParser(description="Takes a FASTA file with exons denoted in CAPS, and a motif file. Outputs one .png with one image per sequence of motif positions on the sequence.")
+    parser = argparse.ArgumentParser(description="Takes a FASTA file with exons denoted in CAPS, and a motif text file with one motif per line (case insensitive). Outputs one .png with one image per sequence of motif and exon positions on the sequence. Aware of ambiguous nucleotides.")
     parser.add_argument("-f", "--fastafile", help="FASTA file to read", required=True, type=str)
     parser.add_argument("-m", "--motiffile", help="Motif text file to read", required=True, type=str)
     return parser.parse_args()
@@ -56,15 +56,22 @@ class Motif:
         self.position = None
         self.regex = None
         self.number:int = number+1
+        self.label = None 
         
         # attributes for drawing # 
         self.color = None
-        self.red = None
-        self.green = None
-        self.blue = None
+        self.red:float = None
+        self.green:float = None
+        self.blue:float = None
     
     def __repr__(self):
         return(f'{self.sequence}')
+    
+    def shortenlabel(self):
+        if len(self.sequence) > 8:
+            self.label = self.sequence[:8] + "..." # shorten long motifs to label friendly format
+        else:
+            self.label = self.sequence
 
     # Methods #
     
@@ -109,26 +116,23 @@ class Motif:
         self.blue:float = 1-((2*(self.number))-1)/10 # limiting 0.2-0.8 guaruntees can't be white (1,1,1) or black (0,0,0)
         self.color = (self.red, self.green, self.blue) # use tuple so order does not change because order = color
         return
-        # make sure you include a checking step to ensure that no motifs are the same color. if they are are, reaassign color with colorit
-    
-    #def draw(self, somethingelse):
-    #    call context here to draw with cairo
 
 class Canvas: # the canvas I will be drawing on # 
     def __init__(self, totalsequences, longestsequence):
         self.height:int = totalsequences*130
         self.width:int = int(longest_sequence+50)
-        self.xlabel = (totalsequences+1)*
         self.buffer: int = 25
         self.constant: int = 100
-    # label information # 
-    
+        # label information # 
+        self.xlabel = ((totalsequences+1)*self.constant)-30
+        
 
 
 # >> define functions << # 
 
 # read in motifs into list # 
 def parse_motif(motiffile: str) -> list:
+    '''read motifs from a text file with one motif per line into a list'''
     motifs = []
     with open(motiffile) as fh:
         for line in fh:
@@ -138,6 +142,7 @@ def parse_motif(motiffile: str) -> list:
 
 # read in sequences into dictionary {sequence : header} # 
 def parse_fasta(onelinefastafile: str) -> dict:
+    '''read sequences and headers in from a fasta file to a dictionary'''
     sequences = {}
     with open(onelinefastafile) as fh:
         for line in fh:
@@ -149,8 +154,8 @@ def parse_fasta(onelinefastafile: str) -> dict:
                 sequences[sequence] = header # put in dictionary
     return sequences
 
-# determine the longest sequence from a list of sequence objects with attribute "length" (use to determine width of png) #
 def longest(sequence_obj_list: list) -> int:
+    '''determine the longest sequence from a list of sequence objects with attribute "length"'''
     longest: int = 0
     for a in sequence_obj_list: 
         if a.length > longest:
@@ -170,12 +175,10 @@ if __name__ == "__main__":
     # make motif objects # 
     motif_obj_list: list = []
     motif_obj_list += [Motif(motifsequence, i) for i, motifsequence in enumerate(motifs)] #for each motif create object Motif(motif) and store in list
-    colors = []
     for motif in motif_obj_list:
         motif.colorit()
-        colors.append(motif.color)
         motif.regexify()
-
+        motif.shortenlabel()
 
     # make sequence objects # 
     sequence_obj_list: list = []
@@ -192,8 +195,6 @@ if __name__ == "__main__":
     longest_sequence:int = longest(sequence_obj_list) # determine width of png 
     drawing_canvas = Canvas(totalsequences, longest_sequence)
 
-
-
     # open cairo image file to draw on. RGB24 is the non-transparent option # 
     # use a 25px margin so add 25 to all width values #
     with cairo.ImageSurface(cairo.FORMAT_RGB24, drawing_canvas.width, drawing_canvas.height) as surface:
@@ -208,9 +209,8 @@ if __name__ == "__main__":
             # 1. label sequence # 
             context.set_source_rgb(0.0, 0.0, 0.0) # black
             context.set_font_size(11)
-            context.select_font_face( 
-                "Arial", cairo.FONT_SLANT_NORMAL, cairo.FONT_WEIGHT_NORMAL)
-            context.move_to(drawing_canvas.buffer, (sequence.number*drawing_canvas.constant)-(drawing_canvas.constant/2))
+            context.select_font_face("Arial")
+            context.move_to(drawing_canvas.buffer, (sequence.number*drawing_canvas.constant)-(drawing_canvas.constant/3))
             context.show_text(sequence.header)
             context.stroke()
 
@@ -242,6 +242,21 @@ if __name__ == "__main__":
                         context.move_to(start+drawing_canvas.buffer, sequence.number*drawing_canvas.constant)       
                         context.line_to(finish+drawing_canvas.buffer, sequence.number*drawing_canvas.constant)
                         context.stroke()
+            
+            # 5. add label for motifs # 
+            for i,motif in enumerate(motif_obj_list):
+                context.set_source_rgb(motif.red, motif.green, motif.blue) # white
+                context.rectangle(drawing_canvas.buffer+(i*120),drawing_canvas.xlabel,20,20)
+                context.fill()
+                context.set_source_rgb(0.0, 0.0, 0.0) # black
+                context.set_font_size(11)
+                context.select_font_face("Arial")
+                context.move_to(drawing_canvas.buffer+(i*120)+22,drawing_canvas.xlabel+12.5)
+                context.show_text(motif.label)
+                context.stroke()
+
+        
+        
         # save #
         surface.write_to_png(pngfilename) 
 

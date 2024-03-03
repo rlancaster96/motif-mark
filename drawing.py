@@ -19,8 +19,8 @@ header = "INSR chr19:7150261-7150808 (reverse complement)"
 sequence1 = 1*100
 end = finish + 25 # buffer 
 
-rectangleheight = totalsequences*200
-rectanglewidth = int(longest_sequence+50)
+rectangleheight = totalsequences*200 # done 
+rectanglewidth = int(longest_sequence+50) # done 
 
 
 
@@ -72,8 +72,6 @@ with cairo.ImageSurface(cairo.FORMAT_RGB24, rectanglewidth, rectangleheight) as 
         context.move_to(start,sequence1)       
         context.line_to(finish,sequence1)
         context.stroke()
-
-
 
     # save 
     surface.write_to_png("tester.png") 
