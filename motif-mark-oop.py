@@ -111,23 +111,23 @@ class Motif:
     
     def colorit(self):
         # generate rgb colors # 
-        self.red:float = 1-((2*(self.number))-1)/10
-        self.green:float = ((2*(self.number))-1)/10
-        self.blue:float = 1-((2*(self.number))-1)/10 # limiting 0.2-0.8 guaruntees can't be white (1,1,1) or black (0,0,0)
-        self.color = (self.red, self.green, self.blue) # use tuple so order does not change because order = color
+        # self.red:float = 1-((2*(self.number))-2)/10
+        # self.green:float = (2*(self.number))/10 
+        # self.blue:float = 1-((2*(self.number))-2)/10 
+        self.red:float = math.log10(self.number)
+        self.green:float = math.log10(self.number)
+        self.blue:float = math.log10(self.number)
         return
 
 class Canvas: # the canvas I will be drawing on # 
     def __init__(self, totalsequences, longestsequence):
-        self.height:int = totalsequences*200
-        self.width:int = int(longest_sequence+50)
         self.buffer: int = 25
         self.constant: int = 100
-        # label information # 
+        self.height:int = (totalsequences*self.constant)+self.constant # add extra on the bottom to account for label
+        self.width:int = int(longest_sequence+(self.buffer*2))
+        # label position information # 
         self.xlabel = ((totalsequences+1)*self.constant)-30
         
-
-
 # >> define functions << # 
 
 # read in motifs into list # 
