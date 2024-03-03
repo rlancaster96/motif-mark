@@ -20,9 +20,10 @@ def get_args():
     return parser.parse_args()
 
 args = get_args()
-motiffile = args.motiffile
-fastafile = args.fastafile
-onelinefastafile = "oneline" + fastafile
+motiffile:str = args.motiffile
+fastafile:str = args.fastafile
+pngfilename:str = fastafile + ".png"
+onelinefastafile:str = "oneline" + fastafile
 
 # define classes #
 
@@ -115,8 +116,13 @@ class Motif:
 
 class Canvas: # the canvas I will be drawing on # 
     def __init__(self, totalsequences, longestsequence):
-        self.height:int = totalsequences*110
+        self.height:int = totalsequences*130
         self.width:int = int(longest_sequence+50)
+        self.xlabel = (totalsequences+1)*
+        self.buffer: int = 25
+        self.constant: int = 100
+    # label information # 
+    
 
 
 # >> define functions << # 
@@ -186,6 +192,8 @@ if __name__ == "__main__":
     longest_sequence:int = longest(sequence_obj_list) # determine width of png 
     drawing_canvas = Canvas(totalsequences, longest_sequence)
 
+
+
     # open cairo image file to draw on. RGB24 is the non-transparent option # 
     # use a 25px margin so add 25 to all width values #
     with cairo.ImageSurface(cairo.FORMAT_RGB24, drawing_canvas.width, drawing_canvas.height) as surface:
@@ -202,15 +210,15 @@ if __name__ == "__main__":
             context.set_font_size(11)
             context.select_font_face( 
                 "Arial", cairo.FONT_SLANT_NORMAL, cairo.FONT_WEIGHT_NORMAL)
-            context.move_to(25, (sequence.number*100)-50)
+            context.move_to(drawing_canvas.buffer, (sequence.number*drawing_canvas.constant)-(drawing_canvas.constant/2))
             context.show_text(sequence.header)
             context.stroke()
 
             # 2. draw sequence # 
             context.set_source_rgb(0.0, 0.0, 0.0) # black
             context.set_line_width(5)
-            context.move_to(25, sequence.number*100)       
-            context.line_to(sequence.length+25, sequence.number*100)
+            context.move_to(drawing_canvas.buffer, sequence.number*drawing_canvas.constant)       
+            context.line_to(sequence.length + drawing_canvas.buffer, sequence.number*drawing_canvas.constant)
             context.stroke()
 
             # 3. draw exon(s) #
@@ -218,22 +226,22 @@ if __name__ == "__main__":
                 exonstart, exonfinish = sequence.exons[i]
                 context.set_source_rgb(0.0, 0.0, 0.0) # black
                 context.set_line_width(30)
-                context.move_to(exonstart+25, sequence.number*100)       
-                context.line_to(exonfinish+25, sequence.number*100)
+                context.move_to(exonstart+drawing_canvas.buffer, sequence.number*drawing_canvas.constant)       
+                context.line_to(exonfinish+drawing_canvas.buffer, sequence.number*drawing_canvas.constant)
                 context.stroke()
 
             # 4. draw motifs # 
             for motif in motif_obj_list:
                 # find where motifs (regex matches) are positionally in sequence #
                 motifpositions = []
-                for a in finditer(motif.regex, sequence.gensequence): 
-                    motifpositions += [a.span()] # "a" is a match object with "span" (position) and "match" (matched sequence) attributes
+                for match in finditer(motif.regex, sequence.gensequence): 
+                    motifpositions += [match.span()] # "a" is a match object with "span" (position) and "match" (matched sequence) attributes
                     for start,finish in motifpositions:
                         context.set_source_rgb(motif.red, motif.green, motif.blue)
                         context.set_line_width(18)
-                        context.move_to(start+25, sequence.number*100)       
-                        context.line_to(finish+25, sequence.number*100)
+                        context.move_to(start+drawing_canvas.buffer, sequence.number*drawing_canvas.constant)       
+                        context.line_to(finish+drawing_canvas.buffer, sequence.number*drawing_canvas.constant)
                         context.stroke()
         # save #
-        surface.write_to_png("tester.png") 
+        surface.write_to_png(pngfilename) 
 
