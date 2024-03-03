@@ -7,3 +7,7 @@ This program takes a FASTA file with exons denoted in caps, and a motif text fil
  Written for Bi625 at BGMP. 
  
  Aware of ambiguous nucleotides and inclusive of 'n's in sequence. e.g., 'ygcy' will match to 'tgnc'.
+
+
+
+ https://www.freecodecamp.org/news/how-to-write-a-good-readme-file/
