@@ -183,7 +183,60 @@ if __name__ == "__main__":
     longest_sequence:int = longest(sequence_obj_list) # determine width of png 
     drawing_canvas = Canvas(totalsequences, longest_sequence)
 
+    # open cairo image file to draw on. RGB24 is the non-transparent option # 
+    # use a 25px margin so add 25 to all width values #
+    with cairo.ImageSurface(cairo.FORMAT_RGB24, drawing_canvas.width, drawing_canvas.height) as surface:
+        context = cairo.Context(surface)
+        # fill in a white background #
+        context.set_source_rgb(1.0, 1.0, 1.0) # white
+        context.rectangle(0, 0, drawing_canvas.width, drawing_canvas.height)
+        context.fill()
+
+        for sequence in sequence_obj_list:
+            
+            # 1. label sequence # 
+            context.set_source_rgb(0.0, 0.0, 0.0) # black
+            context.set_font_size(11)
+            context.select_font_face( 
+                "Arial", cairo.FONT_SLANT_NORMAL, cairo.FONT_WEIGHT_NORMAL)
+            context.move_to(25, (sequence.number*100)-50)
+            context.show_text(header)
+            context.stroke()
+
+            # 2. draw sequence # 
+            context.set_source_rgb(0.0, 0.0, 0.0) # black
+            context.set_line_width(5)
+            context.move_to(25, sequence.number*100)       
+            context.line_to(sequence.length+25, sequence.number*100)
+            context.stroke()
+
+            # 3. draw exon(s) #
+            for i in range(len(sequence.exons)):
+                exonstart, exonfinish = sequence.exons[i]
+                context.set_source_rgb(0.0, 0.0, 0.0) # black
+                context.set_line_width(30)
+                context.move_to(exonstart+25, sequence.number*100)       
+                context.line_to(exonfinish+25, sequence.number*100)
+                context.stroke()
+
+            # 4. draw motifs # 
+            for motif in motif_obj_list:
+                # find where motifs (regex matches) are positionally in sequence #
+                motifpositions = []
+                for a in finditer(motif.regex, sequence.gensequence): 
+                    motifpositions += [a.span()] # "a" is a match object with "span" (position) and "match" (matched sequence) attributes
+                    for start,finish in motifpositions:
+                        context.set_source_rgb(motif.red, motif.green, motif.blue)
+                        context.set_line_width(18)
+                        context.move_to(start, sequence.number*100)       
+                        context.line_to(finish, sequence.number*100)
+                        context.stroke()
+
+
+
+
     # find positions of motifs in sequences , just 1 to start with #
+
 
 
 
@@ -192,20 +245,6 @@ if __name__ == "__main__":
     currentmotif = motif_obj_list[0]
 
 
-    # find where motifs (regex matches) are positionally in sequence #
-    rawpositions = []
-    for a in finditer(currentmotif.regex, currentseq.gensequence): 
-        rawpositions += [a.span()] # "a" is a match object with "span" (position) and "match" (matched sequence) attributes
-    # raw positions for the motifs 
-    print(currentseq.exons)
-    print(currentseq.length)
-    print(rawpositions)
-    print(currentseq.header)
 
 
-    
-    
-
-
-# draw the image see drawing.py 
 
