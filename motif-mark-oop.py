@@ -115,7 +115,7 @@ class Motif:
 
 class Canvas: # the canvas I will be drawing on # 
     def __init__(self, totalsequences, longestsequence):
-        self.height:int = totalsequences*200
+        self.height:int = totalsequences*110
         self.width:int = int(longest_sequence+50)
 
 
