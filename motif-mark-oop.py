@@ -102,10 +102,10 @@ class Motif:
        return
     
     def colorit(self):
-        # generate three random floats to code for rgb color # 
-        self.red = round(random.uniform(0.0, 1.0), 1)
-        self.green = round(random.uniform(0.0, 1.0), 1)
-        self.blue = round(random.uniform(0.2, 0.8), 1) # limiting 0.2-0.8 guaruntees can't be white (1,1,1) or black (0,0,0)
+        # generate rgb colors # 
+        self.red:float = 1-((2*(self.number))-1)/10
+        self.green:float = ((2*(self.number))-1)/10
+        self.blue:float = 1-((2*(self.number))-1)/10 # limiting 0.2-0.8 guaruntees can't be white (1,1,1) or black (0,0,0)
         self.color = (self.red, self.green, self.blue) # use tuple so order does not change because order = color
         return
         # make sure you include a checking step to ensure that no motifs are the same color. if they are are, reaassign color with colorit
@@ -164,9 +164,12 @@ if __name__ == "__main__":
     # make motif objects # 
     motif_obj_list: list = []
     motif_obj_list += [Motif(motifsequence, i) for i, motifsequence in enumerate(motifs)] #for each motif create object Motif(motif) and store in list
+    colors = []
     for motif in motif_obj_list:
         motif.colorit()
+        colors.append(motif.color)
         motif.regexify()
+
 
     # make sequence objects # 
     sequence_obj_list: list = []
@@ -200,7 +203,7 @@ if __name__ == "__main__":
             context.select_font_face( 
                 "Arial", cairo.FONT_SLANT_NORMAL, cairo.FONT_WEIGHT_NORMAL)
             context.move_to(25, (sequence.number*100)-50)
-            context.show_text(header)
+            context.show_text(sequence.header)
             context.stroke()
 
             # 2. draw sequence # 
@@ -228,23 +231,9 @@ if __name__ == "__main__":
                     for start,finish in motifpositions:
                         context.set_source_rgb(motif.red, motif.green, motif.blue)
                         context.set_line_width(18)
-                        context.move_to(start, sequence.number*100)       
-                        context.line_to(finish, sequence.number*100)
+                        context.move_to(start+25, sequence.number*100)       
+                        context.line_to(finish+25, sequence.number*100)
                         context.stroke()
-
-
-
-
-    # find positions of motifs in sequences , just 1 to start with #
-
-
-
-
-    for i, sequences in enumerate(sequence_obj_list): 
-        currentseq = sequence_obj_list[0]
-    currentmotif = motif_obj_list[0]
-
-
-
-
+        # save #
+        surface.write_to_png("tester.png") 
 
