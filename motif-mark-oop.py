@@ -14,7 +14,7 @@ from re import finditer
 
 #set up argparse
 def get_args():
-    parser = argparse.ArgumentParser(description="Takes a FASTA file with exons denoted in CAPS, and a motif text file with one motif per line (case insensitive). Outputs one .png with one image per sequence of motif and exon positions on the sequence. Aware of ambiguous nucleotides.")
+    parser = argparse.ArgumentParser(description="Takes a FASTA file with exons denoted in CAPS, and a motif text file with one motif per line (case insensitive). Outputs one .png with one image per sequence of motif and exon positions on the sequence. Aware of ambiguous nucleotides and inclusive of 'n's in sequence. e.g., 'ygcy' will match to 'tgnc'")
     parser.add_argument("-f", "--fastafile", help="FASTA file to read", required=True, type=str)
     parser.add_argument("-m", "--motiffile", help="Motif text file to read", required=True, type=str)
     return parser.parse_args()
@@ -81,31 +81,31 @@ class Motif:
        for a in oglist: # iterate over the list of characters and append to regex-friendly string
            # https://en.wikipedia.org/wiki/Nucleic_acid_notation #
            if a == "y": # pyrimidine
-               regstring += "[ct]"
+               regstring += "[ctn]"
            elif a == "u": # uracil
-               regstring += "[t]"
+               regstring += "[tn]"
            elif a == "w": # weak
-               regstring += "[at]"
+               regstring += "[atn]"
            elif a == "s": # strong
-               regstring += "[cg]"
+               regstring += "[cgn]"
            elif a == "m": # amino
-               regstring += "[ac]"
+               regstring += "[acn]"
            elif a == "k": # ketone
-               regstring += "[gt]"
+               regstring += "[gtn]"
            elif a == "r": # purine
-               regstring += "[ag]"    
+               regstring += "[agn]"    
            elif a == "b": # not a
-               regstring += "[cgt]"
+               regstring += "[cgtn]"
            elif a == "d": # not c
-               regstring += "[agt]" 
+               regstring += "[agtn]" 
            elif a == "h": # not g
-               regstring += "[act]"
+               regstring += "[actn]"
            elif a == "v": # not t
-               regstring += "[acg]"
+               regstring += "[acgn]"
            elif a == "n": # any nucleotide
-               regstring += "[actg]"
+               regstring += "[actgn]"
            else:
-               regstring += "[" + a + "]" 
+               regstring += "[" + a + "n" + "]" 
        self.regex = regstring
        return
     
@@ -119,7 +119,7 @@ class Motif:
 
 class Canvas: # the canvas I will be drawing on # 
     def __init__(self, totalsequences, longestsequence):
-        self.height:int = totalsequences*130
+        self.height:int = totalsequences*200
         self.width:int = int(longest_sequence+50)
         self.buffer: int = 25
         self.constant: int = 100
@@ -192,7 +192,9 @@ if __name__ == "__main__":
     # >> determine height << # 
     totalsequences: int = len(sequences) # how many sequences am I graphing? (use to determine height of png)
     # >> determine width << # 
-    longest_sequence:int = longest(sequence_obj_list) # determine width of png 
+    longest_sequence:int = 650 # minimum length for my label to display nicely 
+    if longest(sequence_obj_list) > 650:
+        longest_sequence = longest(sequence_obj_list)
     drawing_canvas = Canvas(totalsequences, longest_sequence)
 
     # open cairo image file to draw on. RGB24 is the non-transparent option # 
