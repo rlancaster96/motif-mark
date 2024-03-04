@@ -103,7 +103,7 @@ class Motif:
                regstring += "[actgn]"
            else:
                regstring += "[" + a + "n" + "]" 
-       self.regex = "?=" + regstring
+       self.regex = "r'(?=(" + regstring + "))'"
        return
     
     def colorit(self):
@@ -238,14 +238,26 @@ if __name__ == "__main__":
             for motif in motif_obj_list:
                 # find where motifs (regex matches) are positionally in sequence #
                 motifpositions = []
-                for match in finditer(motif.regex, sequence.gensequence): 
-                    motifpositions += [match.span()] # "match" is a match object with "span" (position) and "match" (matched sequence) attributes
-                    for start,finish in motifpositions:
-                        context.set_source_rgb(motif.red, motif.green, motif.blue)
-                        context.set_line_width(18)
-                        context.move_to(start+drawing_canvas.buffer, sequence.number*drawing_canvas.constant)       
-                        context.line_to(finish+drawing_canvas.buffer, sequence.number*drawing_canvas.constant)
-                        context.stroke()
+                matches = []
+                matches = finditer(motif.regex, sequence.gensequence)
+                print(sequence.gensequence)
+                print(motif.sequence)
+                print(motif.regex)
+                print(matches)
+                results = [match.span() for match in matches]
+                print(results)
+                for result in results:
+                    start = result
+                    end = result + len(motif.sequence)
+                    position = (start, end)
+                    motifpositions.append(position)
+                print(motifpositions)
+                for start,finish in motifpositions:
+                    context.set_source_rgb(motif.red, motif.green, motif.blue)
+                    context.set_line_width(18)
+                    context.move_to(start+drawing_canvas.buffer, sequence.number*drawing_canvas.constant)       
+                    context.line_to(finish+drawing_canvas.buffer, sequence.number*drawing_canvas.constant)
+                    context.stroke()
             
             # 5. add label for motifs # 
             for i,motif in enumerate(motif_obj_list):
