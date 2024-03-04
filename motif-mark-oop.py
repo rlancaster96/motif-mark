@@ -238,10 +238,10 @@ if __name__ == "__main__":
             for motif in motif_obj_list:
                 # find where motifs (regex matches) are positionally in sequence #
                 motifpositions = []
-                matches = re.finditer(r'(?=([ct][g][c][ct]))', sequence.gensequence)
+                matches = re.finditer(motif.regex, sequence.gensequence) # iterable match object
                 for match in matches:
-                    start = match.span()[0]
-                    end = start + len(motif.sequence)
+                    start = match.span()[0] # span returns the position match. for finditer with ?= lookahead it's a tuple of (start,start). I only need one of those values so use [0]
+                    end = start + len(motif.sequence) # calculate the end of the motif by adding the length of the motif.
                     position = (start, end)
                     motifpositions.append(position)
                 for start,finish in motifpositions:
