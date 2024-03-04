@@ -83,4 +83,4 @@ Currently only supports .png output, but future development should allow the use
 
 - see info on pycairo https://pycairo.readthedocs.io/en/latest/
 
-see info on nucleotide notation https://en.wikipedia.org/wiki/Nucleic_acid_notation 
+- see info on nucleotide notation https://en.wikipedia.org/wiki/Nucleic_acid_notation 

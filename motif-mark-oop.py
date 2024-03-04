@@ -18,7 +18,7 @@ args = get_args()
 motiffile:str = args.motiffile
 fastafile:str = args.fastafile
 pngfilename:str = fastafile + ".png"
-onelinefastafile:str = "oneline" + fastafile
+onelinefastafile:str = fastafile + ".oneline"
 
 # define classes #
 
