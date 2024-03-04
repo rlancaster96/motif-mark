@@ -24,6 +24,7 @@ conda activate my_pycairo
 ##### Options 
 motif-mark-oop.py takes two options: -f, and -m. 
 
+| -- | ------ | ------------------------------- |
 | -h | --help | show this help message and exit |
 | -f | --fastafile | FASTA file to read |
 | -m | --motiffile | Motif text file to read |
