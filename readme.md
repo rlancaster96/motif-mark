@@ -21,21 +21,18 @@ conda create -n my_pycairo python=3.11 pycairo
 conda activate my_pycairo
 ```
 
-motif-mark-oop takes two options: -f, and -m. 
+##### Options 
+motif-mark-oop.py takes two options: -f, and -m. 
 
-options:
-  -h, --help            show this help message and exit
-  -f FASTAFILE, --fastafile FASTAFILE
-                        FASTA file to read
-  -m MOTIFFILE, --motiffile MOTIFFILE
-                        Motif text file to read
+| -h | --help | show this help message and exit |
+| -f | --fastafile | FASTA file to read |
+| -m | --motiffile | Motif text file to read |
 
 Example:
 
 ```
 ./motif-mark-oop.py -f Figure_1.fasta -m Fig_1_motifs.txt
 ```
-
 
 ### Ambiguous nucleotides supported
 
@@ -73,9 +70,13 @@ This program is N-inclusive. Future development should allow the user to choose 
 
 ## Resources 
 
-see info on re https://docs.python.org/3/howto/regex.html 
+see info on re https://docs.python.org/3/howto/regex.html
+
 see info on using variables in re  https://stackoverflow.com/questions/6930982/how-to-use-a-variable-inside-a-regular-expression
+
 see info on how to write a readme 
  https://www.freecodecamp.org/news/how-to-write-a-good-readme-file/
+
 see info on pycairo https://pycairo.readthedocs.io/en/latest/
+
 see info on nucleotide notation https://en.wikipedia.org/wiki/Nucleic_acid_notation 
