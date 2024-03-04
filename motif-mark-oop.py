@@ -180,8 +180,6 @@ def longest(sequence_obj_list: list) -> int:
             longest = a.length
     return longest
 
-# def makemotifs(motifs):
-
 # main # 
 
 if __name__ == "__main__":
@@ -269,7 +267,7 @@ if __name__ == "__main__":
                     motifpositions.append(position)
 
                 for start,finish in motifpositions:
-                    context.set_source_rgb(motif.red, motif.green, motif.blue)
+                    context.set_source_rgba(motif.red, motif.green, motif.blue, 0.8) # rgba allows for alpha transparency (set to 0.8)
                     context.set_line_width(18)
                     context.move_to(start+drawing_canvas.buffer, sequence.number*drawing_canvas.constant)       
                     context.line_to(finish+drawing_canvas.buffer, sequence.number*drawing_canvas.constant)
@@ -287,7 +285,6 @@ if __name__ == "__main__":
                 context.show_text(motif.label)
                 context.stroke()
 
-              
         # save #
         surface.write_to_png(pngfilename) 
 
