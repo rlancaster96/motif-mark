@@ -103,7 +103,7 @@ class Motif:
        return
     
     def colorit(self):
-        # generate rgb colors limit 5 # 
+        # rgb colors limit 5 # 
         colors: list = [["red", (0.9, 0.1, 0.1)], ["yellow", (1.0, 0.7, 0.2)], ["green", (0.1, 0.8, 0.2)], ["blue", (0.1, 0.2, 0.8)], ["pink", (0.8, 0.3, 0.6)]]
         index = self.number-1
         self.red, self.green, self.blue = colors[index][1]
@@ -122,7 +122,7 @@ class Canvas: # the canvas I will be drawing on #
 
 # from bioinfo.py. including here so bioinfo.py is not a required import # 
 def oneline_fasta(readfile, writefile):
-    '''Converts a fasta file with multiple sequence lines per record to one sequence line per record.'''
+    '''Converts a fasta file with multiple sequence lines per record to one sequence line per record. A module from my bioinfo.py program.'''
     with open(readfile, "r") as readfh, open(writefile, "w") as writefh:
         seq = ""
         while True:
@@ -148,6 +148,15 @@ def parse_motif(motiffile: str) -> list:
             line = line.strip()
             motifs.append(line)
     return motifs
+
+def check_fasta(onelinefastafile:str):
+    with open(onelinefastafile) as fh:
+        line = fh.readline()
+        if line.startswith(">"):
+            pass
+        else:
+            raise Exception("Your FASTA file does not start with a '>'. Please check the formatting is correct.")
+    return 
 
 # read in sequences into dictionary {sequence : header} # 
 def parse_fasta(onelinefastafile: str) -> dict:
@@ -179,6 +188,7 @@ if __name__ == "__main__":
     
     # convert from multiple line fasta to one line fasta #
     oneline_fasta(fastafile, onelinefastafile)
+    check_fasta(onelinefastafile)
     # intake motif and sequence information from files and store in memory # 
     motifs: list = parse_motif(motiffile) # list of motifs ['motif1', 'motif2', 'motif3', ...]
     sequences: dict = parse_fasta(onelinefastafile) # dictionary of sequences {'sequence1':'header1', 'sequence2':'header2', ...}
@@ -203,8 +213,8 @@ if __name__ == "__main__":
     # >> determine height << # 
     totalsequences: int = len(sequences) # how many sequences am I graphing? (use to determine height of png)
     # >> determine width << # 
-    longest_sequence:int = 650 # minimum length for my label to display nicely 
-    if longest(sequence_obj_list) > 650:
+    longest_sequence:int = (len(motif_obj_list))*200 # minimum length for my label to display nicely 
+    if longest(sequence_obj_list) > (len(motif_obj_list))*200:
         longest_sequence = longest(sequence_obj_list)
     drawing_canvas = Canvas(totalsequences, longest_sequence)
 
