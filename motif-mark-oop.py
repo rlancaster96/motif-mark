@@ -5,8 +5,9 @@ from __future__ import annotations
 import cairo
 import math
 import argparse
-from bioinfo import oneline_fasta
 from re import finditer
+from bioinfo import oneline_fasta
+
 
 #set up argparse
 def get_args():
@@ -102,7 +103,7 @@ class Motif:
                regstring += "[actgn]"
            else:
                regstring += "[" + a + "n" + "]" 
-       self.regex = regstring
+       self.regex = "?=" + regstring
        return
     
     def colorit(self):
@@ -238,7 +239,7 @@ if __name__ == "__main__":
                 # find where motifs (regex matches) are positionally in sequence #
                 motifpositions = []
                 for match in finditer(motif.regex, sequence.gensequence): 
-                    motifpositions += [match.span()] # "a" is a match object with "span" (position) and "match" (matched sequence) attributes
+                    motifpositions += [match.span()] # "match" is a match object with "span" (position) and "match" (matched sequence) attributes
                     for start,finish in motifpositions:
                         context.set_source_rgb(motif.red, motif.green, motif.blue)
                         context.set_line_width(18)
