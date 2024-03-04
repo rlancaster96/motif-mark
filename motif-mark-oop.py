@@ -4,12 +4,8 @@
 from __future__ import annotations
 import cairo
 import math
-import bioinfo
 import argparse
-import random # for randomizing motif colors 
-
-# info on re https://docs.python.org/3/howto/regex.html #
-import re
+from bioinfo import oneline_fasta
 from re import finditer
 
 #set up argparse
@@ -162,12 +158,14 @@ def longest(sequence_obj_list: list) -> int:
             longest = a.length
     return longest
 
+# def makemotifs(motifs):
+
 # main # 
 
 if __name__ == "__main__":
     
     # convert from multiple line fasta to one line fasta #
-    bioinfo.oneline_fasta(fastafile, onelinefastafile)
+    oneline_fasta(fastafile, onelinefastafile)
     # intake motif and sequence information from files and store in memory # 
     motifs: list = parse_motif(motiffile) # list of motifs ['motif1', 'motif2', 'motif3', ...]
     sequences: dict = parse_fasta(onelinefastafile) # dictionary of sequences {'sequence1':'header1', 'sequence2':'header2', ...}
@@ -224,13 +222,16 @@ if __name__ == "__main__":
             context.stroke()
 
             # 3. draw exon(s) #
-            for i in range(len(sequence.exons)):
-                exonstart, exonfinish = sequence.exons[i]
-                context.set_source_rgb(0.0, 0.0, 0.0) # black
-                context.set_line_width(30)
-                context.move_to(exonstart+drawing_canvas.buffer, sequence.number*drawing_canvas.constant)       
-                context.line_to(exonfinish+drawing_canvas.buffer, sequence.number*drawing_canvas.constant)
-                context.stroke()
+            if sequence.exons is None: # if you haven't added any value to the exons attribute
+                pass # just ignore this fact. allows you to plot sequences with no exons 
+            else:
+                for i in range(len(sequence.exons)):
+                    exonstart, exonfinish = sequence.exons[i]
+                    context.set_source_rgb(0.0, 0.0, 0.0) # black
+                    context.set_line_width(30)
+                    context.move_to(exonstart+drawing_canvas.buffer, sequence.number*drawing_canvas.constant)       
+                    context.line_to(exonfinish+drawing_canvas.buffer, sequence.number*drawing_canvas.constant)
+                    context.stroke()
 
             # 4. draw motifs # 
             for motif in motif_obj_list:
