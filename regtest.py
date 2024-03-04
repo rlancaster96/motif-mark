@@ -3,10 +3,10 @@
 import re
 
 fasta = "cgccgccgccaaaaa"
-motif = "ygcy"
+motif = "[ct][g][c][ct]"
 
 motiflen = len(motif)
-matches = re.finditer(r'(?=([ct][g][c][ct]))', fasta)
+matches = re.finditer(r'(?=(' + motif + '))', fasta)
 print(matches)
 results = [int(match.span()[0]) for match in matches] # extract starting position
 motifpositions = []

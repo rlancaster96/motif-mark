@@ -103,7 +103,7 @@ class Motif:
                regstring += "[actgn]"
            else:
                regstring += "[" + a + "n" + "]" 
-       self.regex = "r'(?=(" + regstring + "))'"
+       self.regex = regstring
        return
     
     def colorit(self):
@@ -238,7 +238,8 @@ if __name__ == "__main__":
             for motif in motif_obj_list:
                 # find where motifs (regex matches) are positionally in sequence #
                 motifpositions = []
-                matches = re.finditer(motif.regex, sequence.gensequence) # iterable match object
+                # find more info on r strings and variables in r strings here: https://stackoverflow.com/questions/6930982/how-to-use-a-variable-inside-a-regular-expression # 
+                matches = re.finditer(r'(?=(' + motif.regex + '))', sequence.gensequence) # creates iterable match object called "matches"
                 for match in matches:
                     start = match.span()[0] # span returns the position match. for finditer with ?= lookahead it's a tuple of (start,start). I only need one of those values so use [0]
                     end = start + len(motif.sequence) # calculate the end of the motif by adding the length of the motif.
