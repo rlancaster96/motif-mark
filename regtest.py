@@ -7,15 +7,16 @@ motif = "ygcy"
 
 motiflen = len(motif)
 matches = re.finditer(r'(?=([ct][g][c][ct]))', fasta)
+print(matches)
 results = [int(match.span()[0]) for match in matches] # extract starting position
-tuplelist = []
+motifpositions = []
 for result in results:
     start = result
     end = result + motiflen
     position = (start, end)
-    tuplelist.append(position)
+    motifpositions.append(position)
 
 print(results)
-print(tuplelist)
+print(motifpositions)
 
 

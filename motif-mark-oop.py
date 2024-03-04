@@ -5,7 +5,7 @@ from __future__ import annotations
 import cairo
 import math
 import argparse
-from re import finditer
+import re
 from bioinfo import oneline_fasta
 
 
@@ -41,7 +41,7 @@ class Sequence:
     # Methods # 
     def findexons(self):
         exonlist: list = []
-        for a in finditer("[A-Z]+", self.sequence): 
+        for a in re.finditer("[A-Z]+", self.sequence): 
             exonlist += [(a.span())]
             self.exons = exonlist
 
@@ -238,20 +238,12 @@ if __name__ == "__main__":
             for motif in motif_obj_list:
                 # find where motifs (regex matches) are positionally in sequence #
                 motifpositions = []
-                matches = []
-                matches = finditer(motif.regex, sequence.gensequence)
-                print(sequence.gensequence)
-                print(motif.sequence)
-                print(motif.regex)
-                print(matches)
-                results = [match.span() for match in matches]
-                print(results)
-                for result in results:
-                    start = result
-                    end = result + len(motif.sequence)
+                matches = re.finditer(r'(?=([ct][g][c][ct]))', sequence.gensequence)
+                for match in matches:
+                    start = match.span()[0]
+                    end = start + len(motif.sequence)
                     position = (start, end)
                     motifpositions.append(position)
-                print(motifpositions)
                 for start,finish in motifpositions:
                     context.set_source_rgb(motif.red, motif.green, motif.blue)
                     context.set_line_width(18)
