@@ -6,12 +6,10 @@ import cairo
 import math
 import argparse
 import re
-from bioinfo import oneline_fasta
-
 
 #set up argparse
 def get_args():
-    parser = argparse.ArgumentParser(description="Takes a FASTA file with exons denoted in CAPS, and a motif text file with one motif per line (case insensitive). Outputs one .png with one image per sequence of motif and exon positions on the sequence. Aware of ambiguous nucleotides and inclusive of 'n's in sequence. e.g., 'ygcy' will match to 'tgnc'")
+    parser = argparse.ArgumentParser(description="Takes a FASTA file with exons denoted in CAPS, and a motif text file with one motif per line, max 5 motifs (case insensitive). Outputs one .png with one image per sequence of motif and exon positions on the sequence. Aware of ambiguous nucleotides and inclusive of 'n's in sequence. e.g., 'ygcy' will match to 'tgnc'")
     parser.add_argument("-f", "--fastafile", help="FASTA file to read", required=True, type=str)
     parser.add_argument("-m", "--motiffile", help="Motif text file to read", required=True, type=str)
     return parser.parse_args()
@@ -50,16 +48,14 @@ class Motif:
         # Data # 
         # attributes for getting positions # 
         self.sequence = motifsequence.lower()
-        self.position = None
         self.regex = None
         self.number:int = number+1
         self.label = None 
         
         # attributes for drawing # 
-        self.color = None
-        self.red:float = None
-        self.green:float = None
-        self.blue:float = None
+        self.red = float
+        self.green = float
+        self.blue= float
     
     def __repr__(self):
         return(f'{self.sequence}')
@@ -107,13 +103,10 @@ class Motif:
        return
     
     def colorit(self):
-        # generate rgb colors # 
-        # self.red:float = 1-((2*(self.number))-2)/10
-        # self.green:float = (2*(self.number))/10 
-        # self.blue:float = 1-((2*(self.number))-2)/10 
-        self.red:float = math.log10(self.number)
-        self.green:float = math.log10(self.number)
-        self.blue:float = math.log10(self.number)
+        # generate rgb colors limit 5 # 
+        colors: list = [["red", (0.9, 0.1, 0.1)], ["yellow", (1.0, 0.7, 0.2)], ["green", (0.1, 0.8, 0.2)], ["blue", (0.1, 0.2, 0.8)], ["pink", (0.8, 0.3, 0.6)]]
+        index = self.number-1
+        self.red, self.green, self.blue = colors[index][1]
         return
 
 class Canvas: # the canvas I will be drawing on # 
@@ -126,6 +119,25 @@ class Canvas: # the canvas I will be drawing on #
         self.xlabel = ((totalsequences+1)*self.constant)-30
         
 # >> define functions << # 
+
+# from bioinfo.py. including here so bioinfo.py is not a required import # 
+def oneline_fasta(readfile, writefile):
+    '''Converts a fasta file with multiple sequence lines per record to one sequence line per record.'''
+    with open(readfile, "r") as readfh, open(writefile, "w") as writefh:
+        seq = ""
+        while True:
+            line = readfh.readline().strip()
+            if not line:
+                break
+            if line.startswith(">"):
+                if seq != "":
+                    writefh.write(f"{seq}\n")
+                seq = ""
+                writefh.write(f"{line}\n")
+            else:
+                seq += line
+        writefh.write(seq)
+        return
 
 # read in motifs into list # 
 def parse_motif(motiffile: str) -> list:
@@ -238,13 +250,14 @@ if __name__ == "__main__":
             for motif in motif_obj_list:
                 # find where motifs (regex matches) are positionally in sequence #
                 motifpositions = []
-                # find more info on r strings and variables in r strings here: https://stackoverflow.com/questions/6930982/how-to-use-a-variable-inside-a-regular-expression # 
+                # find more info on r strings and variables in r strings in the readme resources section. # 
                 matches = re.finditer(r'(?=(' + motif.regex + '))', sequence.gensequence) # creates iterable match object called "matches"
                 for match in matches:
                     start = match.span()[0] # span returns the position match. for finditer with ?= lookahead it's a tuple of (start,start). I only need one of those values so use [0]
                     end = start + len(motif.sequence) # calculate the end of the motif by adding the length of the motif.
                     position = (start, end)
                     motifpositions.append(position)
+
                 for start,finish in motifpositions:
                     context.set_source_rgb(motif.red, motif.green, motif.blue)
                     context.set_line_width(18)
@@ -264,8 +277,7 @@ if __name__ == "__main__":
                 context.show_text(motif.label)
                 context.stroke()
 
-        
-        
+              
         # save #
         surface.write_to_png(pngfilename) 
 

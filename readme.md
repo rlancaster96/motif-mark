@@ -11,9 +11,11 @@ This program takes a FASTA file with exons denoted in caps, and a motif text fil
 
 to do:
 fix motif colors
-fix regex to accurately get all overlapping motifs 
+## Resources 
 
 see info on re https://docs.python.org/3/howto/regex.html 
+see info on using variables in re  https://stackoverflow.com/questions/6930982/how-to-use-a-variable-inside-a-regular-expression
+
 
 how to write a readme: 
  https://www.freecodecamp.org/news/how-to-write-a-good-readme-file/
