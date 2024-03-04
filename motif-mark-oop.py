@@ -223,7 +223,7 @@ if __name__ == "__main__":
 
             # 3. draw exon(s) #
             if sequence.exons is None: # if you haven't added any value to the exons attribute
-                pass # just ignore this fact. allows you to plot sequences with no exons 
+                pass # allows you to plot sequences with no exons 
             else:
                 for i in range(len(sequence.exons)):
                     exonstart, exonfinish = sequence.exons[i]
