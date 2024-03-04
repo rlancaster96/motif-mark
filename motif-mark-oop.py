@@ -29,7 +29,6 @@ class Sequence:
         self.gensequence = sequence.lower() # general sequence only containing lower case. use for finding motif positions
         self.header = header
         self.length: int = len(sequence)
-        # self.lengthrange: list = [(0, len(sequence))] put this in somewhere else 
         self.exons = None
         self.number:int = number+1 # add a sequence number here instead of relying on calling the list of objects 
 
@@ -55,7 +54,7 @@ class Motif:
         # attributes for drawing # 
         self.red = float
         self.green = float
-        self.blue= float
+        self.blue = float
     
     def __repr__(self):
         return(f'{self.sequence}')
@@ -149,6 +148,7 @@ def parse_motif(motiffile: str) -> list:
             motifs.append(line)
     return motifs
 
+# check fasta file looks to be formatted corretly # 
 def check_fasta(onelinefastafile:str):
     with open(onelinefastafile) as fh:
         line = fh.readline()
@@ -201,9 +201,9 @@ if __name__ == "__main__":
 
     # make sequence objects # 
     sequence_obj_list: list = []
-    for i, seq in enumerate(sequences): # for each sequence and header, store in list of sequence objects
+    for i, seq in enumerate(sequences): 
         header = sequences[seq]
-        sequence_obj_list += [Sequence(seq, header, i)]
+        sequence_obj_list += [Sequence(seq, header, i)] # for each sequence and header, store in list of sequence objects
     for sequence in sequence_obj_list:
         sequence.findexons()
 
@@ -211,8 +211,8 @@ if __name__ == "__main__":
     # >> determine height << # 
     totalsequences: int = len(sequences) # how many sequences am I graphing? (use to determine height of png)
     # >> determine width << # 
-    longest_sequence:int = (len(motif_obj_list))*200 # minimum length for my label to display nicely 
-    if longest(sequence_obj_list) > (len(motif_obj_list))*200:
+    longest_sequence:int = (len(motif_obj_list))*100 # minimum length for my label to display nicely 
+    if longest(sequence_obj_list) > (len(motif_obj_list))*100:
         longest_sequence = longest(sequence_obj_list)
     drawing_canvas = Canvas(totalsequences, longest_sequence)
 
@@ -267,7 +267,7 @@ if __name__ == "__main__":
                     motifpositions.append(position)
 
                 for start,finish in motifpositions:
-                    context.set_source_rgba(motif.red, motif.green, motif.blue, 0.6) # rgba allows for alpha transparency (set to 0.8)
+                    context.set_source_rgba(motif.red, motif.green, motif.blue, 0.6) # rgba allows for alpha transparency (set to 0.6)
                     context.set_line_width(18)
                     context.move_to(start+drawing_canvas.buffer, sequence.number*drawing_canvas.constant)       
                     context.line_to(finish+drawing_canvas.buffer, sequence.number*drawing_canvas.constant)
