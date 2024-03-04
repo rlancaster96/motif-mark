@@ -2,7 +2,7 @@
  Written for Bi625 at BGMP. 
 
 ## Description
- This program takes a FASTA file with exons denoted in caps, and a text file of motifs with one motif per line (case insensitive, maximum 5 motifs). The output is a single .png with one image per sequence, with motif and exon positions displayed positionally on the sequence, to scale. 
+ This program takes a FASTA file with exons denoted in caps, and a text file of motifs with one motif per line (case insensitive, maximum 5 motifs). The output is a single .png with one image per sequence, with motif and exon positions displayed positionally on the sequence, to scale. Motifs are partially transparent, so overlapping motifs are visible.
  
  This program uses object-oriented code where sequences, motifs, and the drawing canvas are objects that interact with one another. Pycairo (https://pycairo.readthedocs.io/en/latest/) was used for creating the image.
 
@@ -24,7 +24,8 @@ conda activate my_pycairo
 ##### Options 
 motif-mark-oop.py takes two options: -f, and -m. 
 
-| -- | ------ | ------------------------------- |
+| option | option (name) | description |
+| ------ | ---------------- | ----------- |
 | -h | --help | show this help message and exit |
 | -f | --fastafile | FASTA file to read |
 | -m | --motiffile | Motif text file to read |
@@ -69,15 +70,17 @@ Limited to a maximum of 5 motifs due to color and formatting constraints. Capabl
 ##### Inclusive of "N"s
 This program is N-inclusive. Future development should allow the user to choose whether they would like this option or whether they do not want the motif query to include "N" automatically. (e.g., TGCT will match TGNT).
 
+##### Image file options
+Currently only supports .png output, but future development should allow the user to choose between .svg, .png, or other formats supported by Pycairo.
+
 ## Resources 
 
-see info on re https://docs.python.org/3/howto/regex.html
+- see info on re https://docs.python.org/3/howto/regex.html
 
-see info on using variables in re  https://stackoverflow.com/questions/6930982/how-to-use-a-variable-inside-a-regular-expression
+- see info on using variables in re https://stackoverflow.com/questions/6930982/how-to-use-a-variable-inside-a-regular-expression
 
-see info on how to write a readme 
- https://www.freecodecamp.org/news/how-to-write-a-good-readme-file/
+- see info on how to write a readme https://www.freecodecamp.org/news/how-to-write-a-good-readme-file/
 
-see info on pycairo https://pycairo.readthedocs.io/en/latest/
+- see info on pycairo https://pycairo.readthedocs.io/en/latest/
 
 see info on nucleotide notation https://en.wikipedia.org/wiki/Nucleic_acid_notation 
