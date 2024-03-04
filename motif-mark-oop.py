@@ -61,8 +61,8 @@ class Motif:
         return(f'{self.sequence}')
     
     def shortenlabel(self):
-        if len(self.sequence) > 8:
-            self.label = self.sequence[:8] + "..." # shorten long motifs to label friendly format
+        if len(self.sequence) > 10:
+            self.label = self.sequence[:9] + "..." # shorten long motifs to label friendly format
         else:
             self.label = self.sequence
 
@@ -76,7 +76,7 @@ class Motif:
            if a == "y": # pyrimidine
                regstring += "[ctn]"
            elif a == "u": # uracil
-               regstring += "[tn]"
+               regstring += "[un]"
            elif a == "w": # weak
                regstring += "[atn]"
            elif a == "s": # strong
@@ -267,7 +267,7 @@ if __name__ == "__main__":
                     motifpositions.append(position)
 
                 for start,finish in motifpositions:
-                    context.set_source_rgba(motif.red, motif.green, motif.blue, 0.8) # rgba allows for alpha transparency (set to 0.8)
+                    context.set_source_rgba(motif.red, motif.green, motif.blue, 0.6) # rgba allows for alpha transparency (set to 0.8)
                     context.set_line_width(18)
                     context.move_to(start+drawing_canvas.buffer, sequence.number*drawing_canvas.constant)       
                     context.line_to(finish+drawing_canvas.buffer, sequence.number*drawing_canvas.constant)

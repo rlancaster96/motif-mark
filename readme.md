@@ -1,18 +1,36 @@
-## Motif Mark 
-
-This program takes a FASTA file with exons denoted in caps, and a motif text file with one motif per line (case insensitive). The output is a single .png with one image per sequence, with motif and exon positions displayed positionally on the sequence, to scale.
+## Motif Mark : create an image of motifs on a sequence
+ Written for Bi625 at BGMP. 
 
 ## Description
- 
- Written for Bi625 at BGMP. 
- 
- Aware of ambiguous nucleotides and inclusive of 'n's in sequence. e.g., 'ygcy' will match to 'tgnc'.
+ This program takes a FASTA file with exons denoted in caps, and a text file of motifs with one motif per line (case insensitive). The output is a single .png with one image per sequence, with motif and exon positions displayed positionally on the sequence, to scale.
 
-also automatically generates a fasta file with one line per sequence. 
+ - Aware of ambiguous nucleotides and inclusive of 'n's in sequence. e.g., 'ygcy' will match to 'tgnc'
+ - Automatically generates a FASTA file with one line per sequence 
 
-to do:
-fix motif colors
+### Ambiguous nucleotides supported
+
+| Description | Symbol | Base |
+| ----------- | ------ | ---- | 
+| Adenine | A |	A |
+| Cytosine | C | C | 
+| Guanine | G | G |
+| Thymine | T | T |
+| Uracil | U | U |
+| Weak | W | AT |
+| Strong | S | CG |
+| Amino | M | AC |
+| Ketone | K | GT |
+| Purine | R | AG |
+| Pyrimidine | Y | CT |
+| Not A | B | CGT |
+| Not C | D | AGT |
+| Not G | H | ACT | 
+| Not T	| V	| ACG |
+| Any one base | N | ACGT |
+
+
 ## Resources 
+
 
 see info on re https://docs.python.org/3/howto/regex.html 
 see info on using variables in re  https://stackoverflow.com/questions/6930982/how-to-use-a-variable-inside-a-regular-expression
