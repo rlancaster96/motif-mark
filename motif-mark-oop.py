@@ -265,7 +265,7 @@ if __name__ == "__main__":
                     end = start + len(motif.sequence) # calculate the end of the motif by adding the length of the motif.
                     position = (start, end)
                     motifpositions.append(position)
-                print(motifpositions)
+
                 for start,finish in motifpositions:
                     context.set_source_rgba(motif.red, motif.green, motif.blue, 0.6) # rgba allows for alpha transparency (set to 0.6)
                     context.set_line_width(18)
